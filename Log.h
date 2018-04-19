@@ -2,19 +2,20 @@
 #define LOG_H
 
 #include <ctime>
+#include <cstring>
 #include <iostream>
 
 struct Log
 {
       int id;
-      int project_id;
+      char project[50];
       time_t start_time;
       time_t end_time;
 
       bool operator==(const Log &other)
       {
             if (id == other.id) return true;
-            if (project_id == other.project_id) return true;
+            if (strcmp(project, other.project) == 0) return true;
             if (!end_time && !other.end_time) return true;
 
             return false;
@@ -35,20 +36,20 @@ struct Log
             return end_time - start_time;
       }
 
-      void setNew(const Log &other)
-      {
-            if (other.id) id = other.id;
-            if (other.project_id) project_id = other.project_id;
-            if (other.start_time) start_time = other.start_time;
-            if (other.end_time) end_time = other.end_time;
-      }
-
       void print()
       {
             std::cout << id << " : "
-                      << project_id << " "
+                      << project << " "
                       << start_time << " - "
                       << end_time << std::endl;
+      }
+
+      void fill(const Log &other)
+      {
+            if (other.id) id = other.id;
+            if (other.project[0]) strcpy(project, other.project);
+            if (other.start_time) start_time = other.start_time;
+            if (other.end_time) end_time = other.end_time;
       }
 
 };

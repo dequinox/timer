@@ -3,9 +3,9 @@
 
 #include <ctime>
 #include <map>
+#include <set>
 #include <vector>
 #include "Log.h"
-#include "Project.h"
 #include "DataService.h"
 
 namespace Timer
@@ -13,24 +13,19 @@ namespace Timer
       const std::string project_file = "Project.txt";
       const std::string log_file = "Log.txt";
 
-      void start(std::string key)
+      void start(std::string project)
       {
-            Project newProject;
             Log newLog;
-            int project_id;
-            char project_name[50];
-
-            strcpy(project_name, key.c_str());
-            newProject.setName(project_name);
-
-            project_id = DataService::GetID(newProject, project_file);
-
 
             time_t current_time;
             time(&current_time);
             time_t end_time = 0;
 
-            newLog = {current_time, project_id, current_time, end_time};
+            newLog.id = current_time;
+            strcpy(newLog.project, project.c_str());
+            newLog.start_time = current_time;
+            newLog.end_time = end_time;
+
             DataService::Add(newLog, log_file);
       }
 
@@ -47,19 +42,30 @@ namespace Timer
 
       void status(std::string project_name, const int n_days)
       {
+            std::map<std::string, int> project_time;
             std::vector<Log> logs;
-            std::map<int, int> total_project_time;
 
             logs = DataService::Get<Log>(log_file);
-            for (auto l : logs)
+            for (auto log : logs)
             {
-                  if (l.within_n_days(n_days))
-                        total_project_time[l.project_id] += l.time_spent();
+                  std::string project = log.project;
+                  project_time[project] += log.time_spent();
             }
 
-            for (auto p : total_project_time)
+            if (project_name.empty())
             {
-                  std::cout << p.first << " : " << p.second << std::endl;
+                  for (auto project : project_time)
+                  {
+                        std::cout << project.first << " ["
+                                  << project.second << "]"
+                                  << std::endl;
+                  }
+            }
+            else
+            {
+                  std::cout << project_name << " ["
+                            << project_time[project_name] << "]"
+                            << std::endl;
             }
 
       }
@@ -67,29 +73,34 @@ namespace Timer
       void clear()
       {
             DataService::remove(log_file);
-            DataService::remove(project_file);
-      }
-
-      template<class T>
-      void print(std::string file_name)
-      {
-            std::vector<T> data;
-
-            data = DataService::Get<T>(file_name);
-            for (auto instance : data)
-            {
-                  instance.print();
-            }
       }
 
       void projects()
       {
-            print<Project>(project_file);
+            std::set<std::string> projects;
+            std::vector<Log> logs;
+
+            logs = DataService::Get<Log>(log_file);
+            for (auto log : logs)
+            {
+                  projects.insert(log.project);
+            }
+
+            for (auto project : projects)
+            {
+                  std::cout << project << std::endl;
+            }
       }
 
       void logs()
       {
-            print<Log>(log_file);
+            std::vector<Log> logs;
+
+            logs = DataService::Get<Log>(log_file);
+            for (auto log : logs)
+            {
+                  log.print();
+            }
       }
 }
 

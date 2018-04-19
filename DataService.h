@@ -54,7 +54,7 @@ namespace DataService
             {
                   if (data == old_data)
                   {
-                        data.setNew(new_data);
+                        data.fill(new_data);
                         file.seekp(file.tellg() - sizeof(T));
                         file.write(reinterpret_cast<const char *>(&data), sizeof(T));
                   }
@@ -78,35 +78,6 @@ namespace DataService
 
             file.close();
             return data;
-      }
-
-      template <class T>
-      int GetID(const T &key, const std::string &file_name)
-      {
-            std::string path = GetOurPath(true);
-            std::ifstream file(path + file_name, std::ios::binary);
-
-            int maxID = 0;
-            T data;
-            while (file.read(reinterpret_cast<char *>(&data), sizeof(T)))
-            {
-                  data.print();
-                  key.print();
-                  if (data == key)
-                  {
-                        file.close();
-                        return data.id;
-                  }
-                  if (maxID < data.id)
-                        maxID = data.id;
-            }
-
-            data.setNew(key);
-            data.id = maxID + 1;
-            file.close();
-
-            Add(data, file_name);
-            return maxID + 1;
       }
 
       void remove(std::string file_name)
