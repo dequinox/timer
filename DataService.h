@@ -5,16 +5,12 @@
 #include <cstdlib>
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <exception>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
-
-struct Project
-{
-      std::string name;
-      int id;
-};
 
 
 namespace DataService
@@ -24,15 +20,15 @@ namespace DataService
             std::string homedir;
 
             homedir.assign(getpwuid(getuid())->pw_dir);
-            std::string full = homedir + "/Documents/Projects/Timer/";
+            std::string full = homedir + "/Documents/Projects/Timer";
             return full + (append_seperator ? "/" : "");
       }
 
       template <class T>
-      bool Add(const T &data, const std::string file_name)
+      bool Add(const T &data, const std::string &file_name)
       {
             std::string path = GetOurPath(true);
-            std::ofstream file(path + file_name, std::ios::binary);
+            std::ofstream file(path + file_name, std::ios::app | std::ios::binary);
 
             if (file.is_open())
             {
@@ -49,38 +45,18 @@ namespace DataService
       bool Modify(const T &old_data, const T &new_data, const std::string &file_name)
       {
             std::string path = GetOurPath(true);
-            std::fstream file(path + file_name, std::ios::binary);
+            std::fstream file(path + file_name, std::ios::in | std::ios::out | std::ios::binary);
 
             T data;
-            while (file.good())
+            if (!file)
+            std::cout << path + file_name << std::endl;
+            while (file.read(reinterpret_cast<char *>(&data), sizeof(T)))
             {
-                  file.read(reinterpret_cast<char *>(&data), sizeof(T));
                   if (data == old_data)
                   {
+                        data.setNew(new_data);
                         file.seekp(file.tellg() - sizeof(T));
-                        file.write(reinterpret_cast<const char *>(&new_data), sizeof(T));
-                        file.close();
-                        return true;
-                  }
-            }
-            file.close();
-            return false;
-      }
-
-
-      template <class T>
-      bool Remove(const T &old_data, const std::string file_name)
-      {
-            std::string path = GetOurPath(true);
-            std::fstream file(path + file_name, std::ios::binary);
-
-            T data;
-            while(file.good())
-            {
-                  file.read(reinterpret_cast<char *>(&data), sizeof(T));
-                  if (data != old_data)
-                  {
-                        file.write(reinterpret_cast<char *>(&data), sizeof(T));
+                        file.write(reinterpret_cast<const char *>(&data), sizeof(T));
                   }
             }
             file.close();
@@ -95,9 +71,8 @@ namespace DataService
 
             std::vector <T> data;
             T d;
-            while (file.good())
+            while (file.read(reinterpret_cast<char *>(&d), sizeof(T)))
             {
-                  file.read(reinterpret_cast<char *>(&d), sizeof(T));
                   data.push_back(d);
             }
 
@@ -105,35 +80,38 @@ namespace DataService
             return data;
       }
 
-      int GetID(std::string key, std::string file_name)
+      template <class T>
+      int GetID(const T &key, const std::string &file_name)
       {
             std::string path = GetOurPath(true);
-            std::fstream file(path + file_name, std::ios::binary);
+            std::ifstream file(path + file_name, std::ios::binary);
 
-            Project project = {};
             int maxID = 0;
-
-            if (file.is_open())
+            T data;
+            while (file.read(reinterpret_cast<char *>(&data), sizeof(T)))
             {
-                  while (file.good())
+                  data.print();
+                  key.print();
+                  if (data == key)
                   {
-                        file.read(reinterpret_cast<char *>(&project), sizeof(Project));
-                        if (project.name == key || std::to_string(project.id) == key)
-                        {
-                              file.close();
-                              return project.id;
-                        }
-
-                        if (maxID < project.id)
-                              maxID = project.id;
+                        file.close();
+                        return data.id;
                   }
-
-                  project = {key, maxID + 1};
-                  file.write(reinterpret_cast<char *>(&project), sizeof(Project));
-
-                  file.close();
-                  return project.id;
+                  if (maxID < data.id)
+                        maxID = data.id;
             }
+
+            data.setNew(key);
+            data.id = maxID + 1;
+            file.close();
+
+            Add(data, file_name);
+            return maxID + 1;
+      }
+
+      void remove(std::string file_name)
+      {
+            std::remove(file_name.c_str());
       }
 }
 

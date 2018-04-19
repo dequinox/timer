@@ -2,6 +2,7 @@
 #define LOG_H
 
 #include <ctime>
+#include <iostream>
 
 struct Log
 {
@@ -33,6 +34,23 @@ struct Log
       {
             return end_time - start_time;
       }
+
+      void setNew(const Log &other)
+      {
+            if (other.id) id = other.id;
+            if (other.project_id) project_id = other.project_id;
+            if (other.start_time) start_time = other.start_time;
+            if (other.end_time) end_time = other.end_time;
+      }
+
+      void print()
+      {
+            std::cout << id << " : "
+                      << project_id << " "
+                      << start_time << " - "
+                      << end_time << std::endl;
+      }
+
 };
 
 #endif // LOG_H
