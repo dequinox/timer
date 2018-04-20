@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Timer.h"
+#include "Tracker.h"
 using namespace std;
 
 
@@ -14,6 +15,9 @@ int main(int argc, char *argv[])
       if (operation == "projects") Timer::projects();
       if (operation == "log")      Timer::logs();
       if (operation == "delete")   Timer::clear();
+
+      if (operation == "add")      Tracker::add(argv2);
+      if (operation == "habits")   Tracker::habits(7);
 
       return 0;
 }
