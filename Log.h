@@ -33,7 +33,12 @@ struct Log
 
       time_t time_spent()
       {
-            return end_time - start_time;
+            time_t current_time;
+            time(&current_time);
+
+            if (end_time)
+                  return end_time - start_time;
+            return current_time - start_time;
       }
 
       void print()
