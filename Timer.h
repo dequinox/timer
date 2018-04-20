@@ -49,7 +49,16 @@ namespace Timer
             for (auto log : logs)
             {
                   std::string project = log.project;
-                  project_time[project] += log.time_spent();
+                  std::string category = "";
+                  for (int i = 0; i < project.length(); i++)
+                  {
+                        if (project[i] == '.')
+                        {
+                              project_time[category] += log.time_spent();
+                        }
+                        category += project[i];
+                  }
+                  project_time[category] += log.time_spent();
             }
 
             if (project_name.empty())
