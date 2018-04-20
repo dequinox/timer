@@ -65,15 +65,15 @@ namespace Timer
             {
                   for (auto project : project_time)
                   {
-                        std::cout << project.first << " ["
-                                  << project.second << "]"
+                        std::cout << project.first << " "
+                                  << project.second
                                   << std::endl;
                   }
             }
             else
             {
-                  std::cout << project_name << " ["
-                            << project_time[project_name] << "]"
+                  std::cout << project_name << " "
+                            << project_time[project_name]
                             << std::endl;
             }
 
