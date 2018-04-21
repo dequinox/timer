@@ -31,12 +31,23 @@ namespace Timer
 
       void stop()
       {
-            Log oldLog = {};
-            Log newLog = {};
+            Log oldLog = {0,"",0,0};
+            Log newLog = {0,"",0,0};
             time_t current_time;
 
             time(&current_time);
             newLog.end_time = current_time;
+            DataService::Modify(oldLog, newLog, log_file);
+      }
+
+      void modify(std::string old_project, std::string new_project)
+      {
+            Log oldLog;
+            Log newLog;
+
+            strcpy(oldLog.project, old_project.c_str());
+            strcpy(newLog.project, new_project.c_str());
+
             DataService::Modify(oldLog, newLog, log_file);
       }
 
@@ -50,7 +61,7 @@ namespace Timer
             {
                   std::string project = log.project;
                   std::string category = "";
-                  for (int i = 0; i < project.length(); i++)
+                  for (unsigned int i = 0; i < project.length(); i++)
                   {
                         if (project[i] == '.')
                         {
@@ -79,7 +90,15 @@ namespace Timer
 
       }
 
-      void clear()
+      void clear(std::string project_name)
+      {
+            Log log;
+            strcpy(log.project, project_name.c_str());
+
+            DataService::Clear(log, log_file);
+      }
+
+      void reset()
       {
             DataService::remove(log_file);
       }

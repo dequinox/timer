@@ -80,6 +80,33 @@ namespace DataService
             return data;
       }
 
+      template <class T>
+      bool Clear(const T &object, const std::string file_name)
+      {
+            std::string path = GetOurPath(true);
+            std::ifstream in_file(path + file_name, std::ios::binary);
+
+            std::vector<T> data;
+            T tmp_data;
+            while(in_file.read(reinterpret_cast<char *>(&tmp_data), sizeof(T)))
+            {
+                  if (tmp_data != object)
+                  {
+                        data.push_back(tmp_data);
+                  }
+            }
+            in_file.close();
+
+            std::ofstream out_file(path + file_name, std::ios::binary);
+            for (auto d : data)
+            {
+                  out_file.write(reinterpret_cast<char *>(&d), sizeof(T));
+            }
+            out_file.close();
+            return true;
+
+      }
+
       void remove(std::string file_name)
       {
             std::remove(file_name.c_str());

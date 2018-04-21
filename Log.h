@@ -21,6 +21,11 @@ struct Log
             return false;
       }
 
+      bool operator!=(const Log &other)
+      {
+            return !(*this==other);
+      }
+
       bool within_n_days(int n_days)
       {
             time_t current_time;

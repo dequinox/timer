@@ -8,35 +8,35 @@ arr=($answer)
 ms=${arr[1]}
 ms=$(($ms+0))
 
-if [[ (( $ms -lt 14400000 )) ]]
+if [[ (( $ms -lt 144000 )) ]]
 then
 	color="#00897B"
 fi
-if [[ (( $ms -lt 12600000 )) ]]
+if [[ (( $ms -lt 126000 )) ]]
 then
 	color="#43A047"
 fi
-if [[ (( $ms -lt 10800000 )) ]]
+if [[ (( $ms -lt 108000 )) ]]
 then
 	color="#7CB342"
 fi
-if [[ (( $ms -lt 9000000 )) ]]
+if [[ (( $ms -lt 90000 )) ]]
 then
 	color="#C0CA33"
 fi
-if [[ (( $ms -lt 7200000 )) ]]
+if [[ (( $ms -lt 72000 )) ]]
 then 
 	color="#FDD835"
 fi
-if [[ (( $ms -lt 5400000 )) ]]
+if [[ (( $ms -lt 54000 )) ]]
 then
 	color="#FFB300"
 fi
-if [[ (( $ms -lt 3600000 )) ]]
+if [[ (( $ms -lt 36000 )) ]]
 then
 	color="#FB8C00"
 fi
-if [[ (( $ms -lt 1800000 )) ]]
+if [[ (( $ms -lt 18000 )) ]]
 then
 	color="#F4511E"
 fi
